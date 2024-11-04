@@ -1,12 +1,11 @@
 package com.csus.csc133;
 
 public class StudentFriendly extends Student {
-
-	public StudentFriendly(int x, int y, int speed, double talkativeLevel, int sweatingRate) {
-		super(x, y, speed, (int)talkativeLevel, sweatingRate);
-		super.setID(4);
-		//Constructor for the Student.
-	}
 	
+	public StudentFriendly(float x, float y, float direction){
+		super(x,y,direction);
+		super.setTalk(super.getTalk() /2);
+		super.setStatus(5);
+	}
 
 }

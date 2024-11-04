@@ -1,37 +1,52 @@
 package com.csus.csc133;
 
-import java.util.Random;
+import com.codename1.charts.util.ColorUtil;
 
-
-public abstract class GameObject {
-	private int x;
-	private int y;
+public class GameObject {
+	private float x;
+	private float y;
 	private int color;
 	private int size;
 	
-	public GameObject(int x, int y) {
-		this.x = x;
-		this.y = y;
+	
+	GameObject(float x2, float y2) {
+		this.setX(x2);
+		this.setY(y2);
+		this.color = ColorUtil.rgb(255, 0, 0);
 	}
 	
-	public void handleCollide(Student s) {
-		//TODO
+	//Will be used later to implement actual collision, but will likely be inserted into a class handling bounding boxes
+	public void handleCollide(GameObject item) {
+		
 	}
-
-	public int getX() { 
-		return this.x; 
+	
+	//Only simple get and set methods
+	public float getX() {
+		return x;
 	}
-	public int getY() {
+	public float getY() {
 		return y;
 	}
-	public void setX(int x) { 
-		this.x = x;
-	}
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
-	public void setSize(int num) {
-		this.size = num;
+	public void setX(float x) {
+		this.x = x;
+	}
+	public float getColor() {
+		return color;
+	}
+	public void setColor(int val) {
+		this.color = val;
 	}
 	
+	public float getSize() {
+		return size;
+	}
+	public void setSize(int val) {
+		this.size = val;
+	}
+	
+	
+
 }

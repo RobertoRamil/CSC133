@@ -1,11 +1,30 @@
 package com.csus.csc133;
+import java.util.Random;
 
 public class StudentConfused extends Student {
-
-	public StudentConfused(int x, int y, int speed, int talkativeLevel, int sweatingRate) {
-		super(x, y, speed, talkativeLevel, sweatingRate);
-		super.setID(3);
-		//Constructor for the Student.
+	private Random rand = new Random(System.currentTimeMillis());
+	
+	public StudentConfused(float x, float y, float direction){
+		super(x,y,direction);
+		super.setStatus(4);
 	}
 	
+	public void studentMove(int width, int height) {
+		if(willMove()) { //eliminates non-stop and sleeping students
+			if(super.getTimeRem() == 0) {
+				int turnAmt = rand.nextInt(180);
+				//left or right
+				int LorR = rand.nextInt(1);
+				if(LorR == 0) {
+					turnAmt *= -1;
+					super.Turn(0, turnAmt);
+				}
+				else {
+					super.Turn(1, turnAmt);
+				}
+				super.studentMove(width,height);
+			}
+		}
+	}
+
 }

@@ -1,47 +1,45 @@
 package com.csus.csc133;
 
-public class Lecture  {
-	
-	private int time;
-	private String name;
+public class Lecture {
+	private int timeRem = 0;
+	private String lectName;
 	private boolean lectActive;
 	
-	public Lecture(int time, String name) {
-		//sets a lecture with time and the name of it.
-		this.time = time;
-		this.name = name;
-		//sets a boolean to true saying there is a lecture starting.
-		this.lectActive = true;
-	}
-	public int getTime() {
-		//return how much time left in the lecture.
-		return time;
-	}
-	public void decTimeRem(){
-		//if there is a lecture reduce it by 1 second
-		if(lectActive) {
-			time--;
+	Lecture(int time, String name){
+		if(name.isEmpty()) {
+			this.lectActive = false;
+			this.timeRem = 0;
 		}
-	
+		else {
+			this.lectActive = true;
+			this.timeRem = time;
+		}
+		this.lectName = name;
 	}
-	public void lectureEnter() {
-		//student has now entered the lecture
+	
+	//Simple methods to get data about the lecture and handle the time and if it has been entered
+	public void lectureEntered() {
 		lectActive = false;
-		time = 0;
-	}
-	public String getName() {
-		return name;
+		timeRem = 0;
 	}
 	
-	public boolean inSession() {
-		//see if there is an active lecture
+	public float getTimeRem() {
+		return timeRem;
+	}
+	public void decTimeRem() {
+		if(lectActive)
+			timeRem --;
+	}
+	
+	public String getName() {
+		return lectName;
+	}
+	
+	public boolean isOpen() {
 		return lectActive;
 	}
-	public void makeLecture(String name, int time) {
-		//make a new lecture at a 10% rate each game frame.
+	public void makeLect(String name, int time) {
 		lectActive = true;
-		this.time = time;
-		
+		this.timeRem = time;
 	}
-
 }

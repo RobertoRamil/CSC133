@@ -1,0 +1,62 @@
+package com.csus.csc133;
+ 
+public class StudentStrategy extends Student {
+	private Student currentStrat;
+	private String stratName = "";
+
+	public StudentStrategy(float x, float y, float direction) {
+		super(x, y, direction);
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	
+	public void moveStrat(int width, int height){
+		if(currentStrat instanceof StudentConfused) {
+			StudentConfused handleConfStrat = (StudentConfused) currentStrat;
+			handleConfStrat.studentMove(width, height);
+			currentStrat = handleConfStrat;
+		}
+		else {
+			currentStrat.studentMove(width, height);
+		}
+	}
+	
+	
+	
+	public void setStrategy(int type) {
+		if(currentStrat != null) {
+			super.setX(currentStrat.getX());
+			super.setY(currentStrat.getY());
+			super.setHead(currentStrat.getHead());
+		}
+		switch (type) {
+		case 0: //Confused strategy
+			stratName = "Confused Strategy";
+			currentStrat = new StudentConfused(super.getX(),super.getY(),super.getHead());
+			break;
+		case 1: //Vert strategy
+			stratName = "Vertical Strategy";
+			if(90 <= super.getHead() && super.getHead() <= 270) {
+				super.setHead(0);
+			}
+			else {
+				super.setHead(180);
+			}
+			currentStrat = new StudentStrategy(super.getX(), super.getY(), super.getHead() );
+			break;
+		case 2: //Horizonatal Strategy
+			stratName = "Horizontal Strategy";
+			if(0 <= super.getHead() && super.getHead() <= 180) {
+				super.setHead(90);
+			}
+			else {
+				super.setHead(270);
+			}
+			
+			currentStrat = new StudentStrategy(super.getX(), super.getY(), super.getHead());
+			break;
+		}
+	}
+
+}

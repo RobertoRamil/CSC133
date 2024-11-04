@@ -1,54 +1,70 @@
 package com.csus.csc133;
-
+import java.util.ArrayList;
 import java.util.Random;
 
 public class LectureHall extends Facility{
-
-	public Lecture lecture;
-
-
-	public LectureHall(int x, int y, int time, String name) {
-		super(x, y, 90 );
-		this.lecture = new Lecture(time, name);
-		super.setID(0);
-		//constructor stub
+	private Lecture lect;
+	private String name;
+	private static String[] halls = new String[] {"Alpine", "Amador", "AIRC", "Benica", "Brighton", "Calaveras", "Capistrano", "Douglas", "Del Norte", "Eureka", "Mendocino", "Riverside"};
+	private ArrayList <Integer> usedNames = new ArrayList<Integer>();
+	private Random rand = new Random(System.currentTimeMillis());
+	
+	public LectureHall(float x, float y, int time, String name) {
+		super(x, y);
+		this.lect = new Lecture(time, name);
+		setStatusID(0);
+		super.setSize(100);
+		boolean nameChosen = false;
+		int tryname;
+		while(!nameChosen){
+			boolean nameDup = false;
+			tryname = rand.nextInt(10);
+			for(int i = 0; i < usedNames.size(); i++) {
+				if(tryname == usedNames.get(i)) {
+					nameDup = true;
+				}
+			}
+			if(!nameDup) {
+				this.name = halls[tryname];
+				nameChosen = true;
+				usedNames.add(tryname);
+			}
+		}
+		
+		
 	}
 	
+	//These methods retreive data about the lecture within the lecture hall
 	public Lecture getLect() {
-		return lecture;
+		return lect;
 	}
-	public String getName() {
-		return lecture.getName();
-	}
-	public int getTime() {
-		//getting how much time is left in the lecture.
-		return lecture.getTime();
-	}
-	public boolean inSession() {
-		//sees if a lecture is in session
-		return lecture.inSession();
+	public float getTimeRem() {
+		return lect.getTimeRem();
 	}
 	public void decTimeRem() {
-		lecture.decTimeRem();
+		lect.decTimeRem();
 	}
 	
-	public void genNewLecture( String name, int time) {
-		//makes a new lecture only if there is non at the time.
-		if(!lecture.inSession()) {
-			lecture.makeLecture(name, time);
+	public String getClassType() {
+		return lect.getName();
+	}
+	
+	public boolean isOpen() {
+		return lect.isOpen();
+	}
+	
+	public void lectureEntered() {
+		lect.lectureEntered();
+	}
+	
+	public void genNewLect(String name, int time) {
+		if(!lect.isOpen()) {
+			lect.makeLect(name, time);
 		}
 	}
-	public void lectureEnter() {
-		//student is in lecture
-		lecture.lectureEnter();
+	
+	public String getName() {
+		return this.name;
 	}
-	public void handleCollide(Student s)	{
-		//handle colididing with the student s and calling the correct functions.
-		if (lecture.getTime()>0) {
-			System.out.println(lecture.getName() + " has time: " + lecture.getTime() + " left.");
-			lectureEnter();
-			System.out.println("StudetnPlayer has Colllided with Lecutre: " + lecture.getName());
-			
-		}
-	}
+
 }

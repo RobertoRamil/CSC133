@@ -1,14 +1,12 @@
+
+
 package com.csus.csc133;
 
 public class WaterDispenser extends Facility {
-
-	public WaterDispenser(int x, int y) {
-		super(x, y, 40);
-		super.setID(2);
-	}
 	
-	public void handleCollide()	{
-		//TODO
+	public WaterDispenser(float x, float y) {
+		super(x, y);
+		setStatusID(1);
 	}
 
 }

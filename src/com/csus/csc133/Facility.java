@@ -1,30 +1,30 @@
 package com.csus.csc133;
 
-import java.util.Random;
+public abstract class Facility extends GameObject{
+	//Stores the names of different facilities
+	private String[] facilType = new String[] {"LectureHall", "Waterdispenser", "Restroom"};
 
-public abstract class Facility extends GameObject {
-	//list of different facilities
-	static String [] Title = new String[] {"LectureHall", "Restroom", "WaterDispense"};
-	private int TitleID;
-	Random r = new Random();
-
-	public Facility(int x, int y,int w) {
+	//index for the facility types
+	private int statusID;
+	
+	Facility(float x, float y){
 		super(x, y);
-		super.setSize(w);
-		//constructor stub
 	}
 	
-	//setting the id of each facility
-	public void setID(int val) {
-		this.TitleID = val;
+	//get/set methods
+	public int getTypeID() {
+		return getStatusID();
 	}
-	//getting the id
-	public int getID() {
-		return TitleID;
-	}
-	//getting what the facility is called.
-	public String getTitle() {
-		return Title[TitleID];
+	public String getType() {
+		return facilType[getStatusID()];
 	}
 
+	public int getStatusID() {
+		return statusID;
+	}
+
+	public void setStatusID(int statusID) {
+		this.statusID = statusID;
+	}
+	
 }

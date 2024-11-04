@@ -1,11 +1,12 @@
 package com.csus.csc133;
 
-public class StudentBiking extends Student{
+public class StudentBiking extends Student  {
 	
-	public StudentBiking(int x, int y, int speed, int talkativeLevel, int sweatingRate) {
-		super(x, y, speed, talkativeLevel, sweatingRate);
-		super.setID(1);
-		//Constructor for the Student.
+	public StudentBiking(float x, float y, float direction){
+		super(x,y,direction);
+		super.setSweat(super.getSweat()*3);
+		super.setSpeed(super.getSpeed()*2);
+		super.setStatus(2);
 	}
-	
+
 }
