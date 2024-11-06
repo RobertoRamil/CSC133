@@ -11,14 +11,14 @@ public class StudentStrategy extends Student {
 	
 	
 	
-	public void moveStrat(int width, int height){
+	public void moveStrat(int width, int height, int frameTime){
 		if(currentStrat instanceof StudentConfused) {
 			StudentConfused handleConfStrat = (StudentConfused) currentStrat;
-			handleConfStrat.studentMove(width, height);
+			handleConfStrat.studentMove(width, height, frameTime);
 			currentStrat = handleConfStrat;
 		}
 		else {
-			currentStrat.studentMove(width, height);
+			currentStrat.studentMove(width, height, frameTime);
 		}
 	}
 	

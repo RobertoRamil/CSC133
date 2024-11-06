@@ -1,7 +1,7 @@
 package com.csus.csc133;
 
 public class Lecture {
-	private int timeRem = 0;
+	private float timeRem = 0;
 	private String lectName;
 	private boolean lectActive;
 	
@@ -26,9 +26,9 @@ public class Lecture {
 	public float getTimeRem() {
 		return timeRem;
 	}
-	public void decTimeRem() {
+	public void decTimeRem(int frameTime) {
 		if(lectActive)
-			timeRem --;
+			timeRem -= (frameTime /1000.0);
 	}
 	
 	public String getName() {

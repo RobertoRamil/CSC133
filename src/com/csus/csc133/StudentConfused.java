@@ -9,7 +9,7 @@ public class StudentConfused extends Student {
 		super.setStatus(4);
 	}
 	
-	public void studentMove(int width, int height) {
+	public void studentMove(int width, int height, int frameTime) {
 		if(willMove()) { //eliminates non-stop and sleeping students
 			if(super.getTimeRem() == 0) {
 				int turnAmt = rand.nextInt(180);
@@ -22,7 +22,7 @@ public class StudentConfused extends Student {
 				else {
 					super.Turn(1, turnAmt);
 				}
-				super.studentMove(width,height);
+				super.studentMove(width,height, frameTime);
 			}
 		}
 	}

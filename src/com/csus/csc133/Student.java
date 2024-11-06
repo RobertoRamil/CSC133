@@ -3,6 +3,7 @@ import java.lang.Math;
 import java.util.Random;
 
 import com.codename1.charts.util.ColorUtil;
+import com.codename1.ui.Graphics;
 
 public abstract class Student extends GameObject {
 	//Default values
@@ -13,7 +14,7 @@ public abstract class Student extends GameObject {
 	private float defSpeed = 10;
 	private float defTalkLvl = 2;
 	private float defSweatRate = 3;
-	private int defHydrate = 100;
+	private float defHydrate = 100;
 	//Student attributes
 	private float speed;
 	private float talkLvl;
@@ -45,6 +46,7 @@ public abstract class Student extends GameObject {
 		this.talkLvl = defTalkLvl;
 		this.sweatRate = defSweatRate;
 		super.setSize(rand.nextInt(21)+40);
+		super.setColor(ColorUtil.rgb(255, 0, 0));
 	}
 	//Checks
 	public boolean willTalk() {
@@ -79,14 +81,12 @@ public abstract class Student extends GameObject {
 	
 	
 	//A static method to set any 2 students to talking
-	public static void Talking(Student s1, Student s2) {
+	public static Float Talking(Student s1, Student s2) {
+		float maxTime = 0;
 		if(s1.willTalk() && s2.willTalk()) {//Ensures students will talk in the first place (sleeping and nonstop students won't talk)
-			float maxTime = Math.max(s1.getTalk(), s2.getTalk());
-			s1.setTimeRem(maxTime);
-			s1.setColor(ColorUtil.rgb(255, 175, 200));
-			s2.setTimeRem(maxTime);
-			s2.setColor(ColorUtil.rgb(255, 175, 200));
+			maxTime = Math.max(s1.getTalk(), s2.getTalk());
 		}
+		return maxTime;
 	}
 	
 	public void Turn(int direction, int specificTurn) {
@@ -117,27 +117,35 @@ public abstract class Student extends GameObject {
 	}
 	
 	//Generic method for student movement
-	public void studentMove(int width, int height) {
+	public void studentMove(int width, int height, int frameTime) {
+		boolean wall = false;
+		//System.out.println(frameTime/1000);
 		if(willMove()) {//eliminates non-stop and sleeping students
-			if(timeRem == 0) {//Ensure a talking student does not move
+			if(timeRem <= 0) {//Ensure a talking student does not move
 				//Standard Student movement
 				if((this.statusID != -1)) {
-					hydrate -= sweatRate;
+					hydrate -= sweatRate*(frameTime/1000.0);
 					setX((float) (super.getX() + Math.cos(Math.toRadians(90 - head))*speed));
 					//These 2 if statements ensure the student does not exit the level bounds
-					if(super.getX() >= width) {
-						setX((float) width);
+					//System.out.println(super.getX() + ";" + width);
+					//System.out.println(super.getY() + ";" + height);
+					if((int)super.getX() >= width) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					if(super.getX() <= 0) {
-						setX(0);
+					if((int)super.getX() <= 0) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					setY((float) (super.getX() + Math.sin(Math.toRadians(90 - head))*speed));
+					setY((float) (super.getY() + Math.sin(Math.toRadians(90 - head))*speed));
 					//These 2 if statements ensure the student does not exit the level bounds
-					if(super.getY() >= height) {
-						setY((float) height);
+					if((int)super.getY() >= height) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					if(super.getY() <= 0) {
-						setY(0);
+					if((int)super.getY() <= 0) {
+						wall = true;
+						this.Turn(0, 180);
 					}
 				}
 				//allows the student strategy to simulate confused movement
@@ -153,33 +161,37 @@ public abstract class Student extends GameObject {
 						Turn(1, turnAmt);
 					}
 					hydrate -= sweatRate;
-					setX((float) (super.getX() + Math.cos(Math.toRadians(90 - head))*speed));
+					setX((float)(super.getX() + Math.cos(Math.toRadians(90 - head))*speed));
 					//These 2 if statements ensure the student does not exit the level bounds
-					if(super.getX() >= width) {
-						setX((float) width);
+					if((int)super.getX() >= width) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					if(super.getX() <= 0) {
-						setX(0);
+					if((int)super.getX() <= 0) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					setY((float) (super.getX() + Math.sin(Math.toRadians(90 - head))*speed));
+					setY((float)(super.getY() + Math.sin(Math.toRadians(90 - head))*speed));
 					//These 2 if statements ensure the student does not exit the level bounds
-					if(super.getY() >= height) {
-						setY((float) height);
+					if((int)super.getY() >= height) {
+						wall = true;
+						this.Turn(0, 180);
 					}
-					if(super.getY() <= 0) {
-						setY(0);
+					if((int)super.getY() <= 0) {
+						wall = true;
+						this.Turn(0, 180);
 					}
 				}
 			}
 		}
 	}
 	
-	public void incTime() {
-		if(timeRem > 0) {
-			timeRem --;
+	public void incTime(int frameTime) {
+		if(timeRem >=-2) {
+			timeRem -= (frameTime/1000.0); 
 		}
-		else if (timeRem == 0) {
-			if(super.getColor() == ColorUtil.rgb(255, 0, 0)) {
+		else if (timeRem <= 0) {
+			if(super.getColor() != ColorUtil.rgb(255, 0, 0)) {
 				super.setColor(ColorUtil.rgb(255, 0, 0));
 			}
 		}
@@ -238,6 +250,15 @@ public abstract class Student extends GameObject {
 	}
 	public void setSweat(float val) {
 		this.sweatRate = val;
+	}
+	
+	@Override
+	public void draw(Graphics g, int getX, int getY) {
+		g.setColor((int) this.getColor());
+		int[] xPoints = {(int)(this.getX()-this.getSize()/2 + getX), (int)(this.getX()+this.getSize()/2 + getX), (int)(this.getX() + getX)}; 
+		int[] yPoints = {(int)(this.getY()+this.getSize()/2 + getY), (int)(this.getY()+this.getSize()/2 + getY), (int)(this.getY()-this.getSize()/2 + getY)};
+		g.drawPolygon(xPoints, yPoints, 3 );
+		g.drawString(statusTypes[statusID],(int)(getX()-getSize()/2 + getX), (int)(getY() + getY));
 	}
 	
 	

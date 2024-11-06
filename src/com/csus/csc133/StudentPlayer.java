@@ -1,6 +1,8 @@
 package com.csus.csc133;
 
 import com.csus.csc133.GameModel;
+import com.codename1.charts.util.ColorUtil;
+import com.codename1.ui.Graphics;
 
 
 public class StudentPlayer extends Student {
@@ -28,5 +30,20 @@ public class StudentPlayer extends Student {
 		}
 		return player;
 		
+	}
+	public static void placeCenter(GameModel gm) {
+		player.setX(gm.getWidth()/2);
+		player.setY(gm.getHeight()/2);
+	}
+	
+	@Override
+	public void draw(Graphics g, int getX, int getY) {
+		g.setColor((int) this.getColor());
+		g.fillTriangle((int)(this.getX()-this.getSize()/2+getX),
+				(int)(this.getY()+this.getSize()/2+getY),
+				(int)(this.getX()+this.getSize()/2+getX),
+				(int)(this.getY()+this.getSize()/2+getY),
+				(int)(this.getX() + getX),
+				(int)(this.getY()-this.getSize()/2+getY));
 	}
 }

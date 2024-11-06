@@ -19,7 +19,7 @@ public class ViewMessage extends Container implements Observer{
 	@Override
 	public void update(Observable Obs, Object data) {
 		// TODO Auto-generated method stub
-		System.out.println("Message updated");
+		//System.out.println("Message updated");
 		String msg;
 		GameModel gm = (GameModel) Obs;
 		int comCode = gm.getCommandCode();

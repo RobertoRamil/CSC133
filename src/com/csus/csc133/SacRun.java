@@ -19,10 +19,14 @@ import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.*;
 import com.codename1.ui.events.*;
 import com.codename1.ui.layouts.*;
+import com.codename1.ui.util.UITimer;
 
-public class SacRun extends Form{
+
+
+public class SacRun extends Form implements Runnable{
 	
 	private GameModel gm;
+	boolean loaded = false;
 	private boolean playerMove = false;
 	private StudentPlayer handlePlayer;
 	private Container vMap;
@@ -31,20 +35,29 @@ public class SacRun extends Form{
 	private Container vButtons;
 	private Toolbar tool;
 	private Random rand = new Random(System.currentTimeMillis());
+	UITimer timer;
+	int frame = 30;
 	
 	//Command lists
 	private PlayerCommands[] pCom = new PlayerCommands[5];
-	private WorldCommands[] wCom = new WorldCommands[7];
+	private WorldCommands[] wCom = new WorldCommands[5];
+	
+	char currentKey;
+	boolean keyPress = false;
+	boolean gamePaused = false;
 	
 	public SacRun(){
-		gm = new GameModel();
+		gm = new GameModel(frame);
 
 		A2(); // gets weird if things are not loaded in before the map is loaded
-		while(vMap.getWidth() == 0 || vMap.getHeight() == 0)	{
+		while(!loaded)	{
 			//do nothing wait until GUI loads
 		}
 		gm.setBounds(vMap.getWidth(), vMap.getHeight());
 		gm.init();
+		
+		timer = new UITimer(this);
+		timer.schedule(frame, true, this);
 		
 	}
 	
@@ -52,7 +65,7 @@ public class SacRun extends Form{
 		//Initialize Commands
 		createCommands();
 		//Creating the main UI
-		vMap = new ViewMap();
+		vMap = new ViewMap(gm, this);
 		gm.setBounds(vMap.getWidth(), vMap.getHeight());
 		vStat = new ViewStatus();
 		vMessage = new ViewMessage();
@@ -71,7 +84,8 @@ public class SacRun extends Form{
 		
 		createToolbar();
 		this.show();
-		gm.simulateChange();
+		loaded = true;
+		//gm.simulateChange(); Should do this naturally now.
 	}
 
 	private void createCommands() {
@@ -82,13 +96,11 @@ public class SacRun extends Form{
 		pCom[3] = new PlayerCommands("Right", this);
 		pCom[4] = new PlayerCommands("Change Strategy", this);
 		
-		wCom[0] = new WorldCommands("Lecture Hall", this);
-		wCom[1] = new WorldCommands("Restroom", this);
-		wCom[2] = new WorldCommands("Water Dispenser", this);
-		wCom[3] = new WorldCommands("Student", this);
-		wCom[4] = new WorldCommands("Next Frame", this);
-		wCom[5] = new WorldCommands("About", this);
-		wCom[6] = new WorldCommands("Exit", this);
+		wCom[0] = new WorldCommands("Play", this);
+		wCom[1] = new WorldCommands("Pause", this);
+		wCom[2] = new WorldCommands("Change Location", this);
+		wCom[3] = new WorldCommands("About", this);
+		wCom[4] = new WorldCommands("Exit", this);
 	}
 	private void createToolbar() {
 	//Create the toolbar
@@ -96,11 +108,11 @@ public class SacRun extends Form{
 			setToolbar(tool);
 			
 			tool.addCommandToSideMenu(pCom[4]);
-			tool.addCommandToSideMenu(wCom[5]);
-			tool.addCommandToSideMenu(wCom[6]);
+			tool.addCommandToSideMenu(wCom[2]);
+			tool.addCommandToSideMenu(wCom[3]);
 			
-			tool.addCommandToRightBar(wCom[0]);
-			tool.addCommandToRightBar(wCom[5]);
+			tool.addCommandToRightBar(wCom[3]);
+			tool.addCommandToRightBar(wCom[2]);
 			
 	}
 	
@@ -148,11 +160,11 @@ public class SacRun extends Form{
 		
 		gm.setStrat1(handle1);
 		gm.setStrat2(handle2);
-		System.out.println("hm");
 		updateCommandCode(5);
 	}
 	
 	//Below are the functions used to make the world commands of buttons work
+	/*
 	public void lectureHall() {
 		gm.simFirstLectComplete();
 		updateCommandCode(6);
@@ -201,25 +213,48 @@ public class SacRun extends Form{
 		
 		updateCommandCode(9);
 	}
+	*/
 	
 	public void nextFrame() {
-		System.out.println("Frame++");
+		//System.out.println("Frame++");
 		//handlePlayer = gm.getPlayer();
 		handlePlayer = StudentPlayer.getPlayer(gm);
 		
 		if(playerMove) {
-			handlePlayer.studentMove(gm.getWidth(),gm.getHeight());
+			handlePlayer.studentMove(gm.getWidth(),gm.getHeight(), frame);
 		}
-		handlePlayer.incTime();
+		handlePlayer.incTime(frame);
 		gm.setPlayer(handlePlayer);
 		gm.incTime();
-		updateCommandCode(10);
+		//updateCommandCode(10);
+		
+		gm.setBounds(vMap.getWidth(), vMap.getHeight());
+	}
+	public void pause() {
+		gamePaused = true;
+		timer.cancel();
+		((ViewButtons) vButtons).paused(wCom);
+	}
+	public void play() {
+		gamePaused = false;
+		timer.schedule(frame, true, this);
+		((ViewButtons) vButtons).unpause(wCom);
+	}
+	public void changeLocation() {
+		int item = ((ViewMap) vMap).selectedItem();
+		if(item != -4) {
+			((ViewMap) vMap).awaitClick();
+		}
+		else {
+			Command confirmBox = new Command("Okay");
+			Command abtBox = Dialog.show("Error","Object must be selected to use change location", confirmBox);
+		}
 	}
 	
 	public void about() {
 		//
 		Command confirmBox = new Command("Confirm");
-		Command abtBox = Dialog.show("A2", "Roberto Ramil Fall 2024", confirmBox);
+		Command abtBox = Dialog.show("A3", "Roberto Ramil Fall 2024", confirmBox);
 		updateCommandCode(11);
 	}
 	
@@ -241,6 +276,77 @@ public class SacRun extends Form{
 	
 	public void gameOver() {
 		gm.endGame("");
+	}
+	
+	@Override
+	public void run() {
+		if(!gamePaused) {
+			nextFrame();
+			if(keyPress) {
+				System.out.println(currentKey);
+				switch(currentKey) {
+				case 'w':
+				case 'W':
+					move();
+					break;
+				case 's':
+				case 'S':
+					stop();
+					break;
+				case 'a':
+				case 'A':
+					left();
+					break;
+				case 'd':
+				case 'D':
+					right();
+					break;
+				}
+			}
+		}
+	}
+	
+	public void keyPressed (int keyCode) {
+		currentKey = (char) keyCode;
+		keyPress = true;
+	}
+	
+	public void keyReleased(int keycode) {
+		keyPress = false;
+	}
+	
+	public void moveItem(int thisX, int thisY, int selected) {
+		GameObject handle;
+		if(selected == -3) {
+			handle = gm.getPlayer();
+			handle.setX(thisX);
+			handle.setY(thisY);
+			
+			gm.setPlayer((StudentPlayer) handle);
+		}
+		else if(selected == -2) {
+			handle = gm.getStrat1();
+			handle.setX(thisX);
+			handle.setY(thisY);
+			
+			gm.setStrat1((StudentStrategy)handle);
+		}
+		else if(selected == -1) {
+			handle = gm.getStrat2();
+			handle.setX(thisX);
+			handle.setY(thisY);
+			
+			gm.setStrat2((StudentStrategy)handle);
+		}
+		else if(selected >= 0) {
+			handle = gm.getCol().get(selected);
+			handle.setX(thisX);
+			handle.setY(thisY);
+			
+			gm.placeAt(selected, handle);
+			
+			
+		}
 	}
 }
 

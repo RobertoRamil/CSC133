@@ -9,28 +9,32 @@ public class StudentHappy extends Student {
 		super.setStatus(6);
 	}
 	
-	public void studentMove(int width, int height) {
+	public void studentMove(int width, int height, int frameTime) {
 		int roll = rand.nextInt(10); //roll to see if the student does a jump ~10% chance
 		int mult = 1;
 		if(roll == 1 ) {
-			mult = 10; //multiply speed by 10 for this movement step
+			mult = 2; //multiply speed by 10 for this movement step
 		}
-		setX((float) (super.getX() + Math.cos(Math.toRadians(90 - super.getHead()))  * (10*super.getSpeed())));
+		setX((float) (super.getX() + Math.cos(Math.toRadians(super.getHead()))  * (mult*super.getSpeed()*(frameTime/1000.0))));
 		if(super.getX() >= width) {
-			setX((float) width);
+			super.setX(width-40);
+			this.Turn(0, 180);
 		}
-		if(super.getX() <= 0) {
-			setX(0);
+		if(super.getX() <= 0){
+			super.setX(0+40);
+			this.Turn(0, 180);
 		}
-		setY((float) (super.getX() + Math.sin(Math.toRadians(90 - super.getHead()))* (10*super.getSpeed())));
+		setY((float) (super.getY() + Math.sin(Math.toRadians(super.getHead()))* (mult*super.getSpeed()*(frameTime/1000.0))));
 		if(super.getY() >= height) {
-			setY((float) height);
+			super.setY(height-40);
+			this.Turn(0, 180);
 		}
 		if(super.getY() <= 0) {
-			setY(0);
+			super.setY(0+40);
+			this.Turn(0, 180);
 		}
 		else {
-			super.studentMove(width,height);
+			super.studentMove(width,height, frameTime);
 		}
 	}
 

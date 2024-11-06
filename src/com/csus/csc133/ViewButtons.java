@@ -24,4 +24,11 @@ public class ViewButtons extends Container {
 			add(buttons[i+5]);
 		}
 	}
+	
+	public void paused(Command[] wCom) {
+		buttons[5].setCommand(wCom[0]);
+	}
+	public void unpause(Command[] wCom) {
+		buttons[5].setCommand(wCom[1]);
+	}
 }

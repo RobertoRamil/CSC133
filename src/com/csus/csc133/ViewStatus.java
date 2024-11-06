@@ -43,7 +43,7 @@ public class ViewStatus extends Container implements Observer{
 		// TODO Auto-generated method stub
 		GameModel gm = (GameModel) Obs;
 		LectureHall handle = gm.getFirstlect();
-		System.out.println("Stat updated");
+		//System.out.println("Stat updated");
 		if(handle != null) {
 			lectHallName.setText("Lecture occuring at: " +handle.getName());
 			lectTimeRem.setText("Lecture starts ins: "+handle.getLect().getTimeRem());
